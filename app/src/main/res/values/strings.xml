@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">THSR App</string>
     <string name="title_activity_maps">THSR Map</string>
+    
+    <!--  map fragment  -->
+    <string name="start_station">起點站</string>
+    <string name="end_station">終點站</string>
+    <string name="search_station">站點搜尋</string>
+    <string name="search_path">路線規劃搜尋</string>
+    
 </resources>

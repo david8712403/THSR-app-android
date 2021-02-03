@@ -59,6 +59,7 @@ class THSR {
 
     // THSR APIs
     enum class APIs(val url: String){
-        STATION("https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/Station?\$format=JSON")
+        STATION("https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/Station?\$format=JSON"),
+        SHAPE("https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/Shape?\$format=JSON")
     }
 }

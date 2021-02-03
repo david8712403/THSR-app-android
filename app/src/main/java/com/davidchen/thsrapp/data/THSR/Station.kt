@@ -1,4 +1,4 @@
-package com.davidchen.thsrapp.data
+package com.davidchen.thsrapp.data.THSR
 
 import com.google.android.gms.maps.model.LatLng
 
@@ -23,7 +23,7 @@ class Station {
 
     override fun toString(): String {
         return """
-            name:${StationName.Zh_tw},
+            name:{Zh_tw:${StationName.Zh_tw}, En:${StationName.En}},
             addr:${StationAddress},
             position:{${StationPosition.PositionLat},${StationPosition.PositionLon}}
         """.trimIndent()
