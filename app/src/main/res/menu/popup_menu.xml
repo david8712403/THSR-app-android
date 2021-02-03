@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/station_name"
+        android:title="@string/station_name" />
+
+    <item
+        android:id="@+id/start_station"
+        android:title="@string/start_station" />
+
+    <item
+        android:id="@+id/end_station"
+        android:title="@string/end_station" />
+
+    <item
+        android:id="@+id/near_restaurant"
+        android:title="@string/near_restaurant" />
+
+    <item
+        android:id="@+id/cancel"
+        android:title="@string/cancel" />
+</menu>

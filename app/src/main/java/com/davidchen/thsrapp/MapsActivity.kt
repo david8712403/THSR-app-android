@@ -4,6 +4,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.davidchen.thsrapp.data.THSR.Shape
@@ -97,7 +99,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             title(s.StationName.Zh_tw)
                         }
                         runOnUiThread {
-                            mMap.addMarker(marker)
+                            mMap.addMarker(marker).apply {
+                                tag = stations.indexOf(s)
+                            }
                         }
                     }
                 }
@@ -144,6 +148,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 8f))
         findViewById<Button>(R.id.bt_view_all).setOnClickListener {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 8f))
+        }
+        mMap.setOnMarkerClickListener { m ->
+            m.showInfoWindow()
+            val popupMenu = PopupMenu(this, findViewById(R.id.v_popup_anchor))
+            popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
+
+            popupMenu.menu.findItem(R.id.station_name).title = stations[m.tag as Int].StationName.Zh_tw
+
+            popupMenu.show()
+            popupMenu.setOnMenuItemClickListener{ item ->
+                when(item.itemId) {
+                    R.id.station_name -> {
+                        // nothing
+                    }
+                    R.id.start_station -> {
+                        findViewById<TextView>(R.id.tv_start_station).text =
+                            stations[m.tag as Int].StationName.Zh_tw
+                    }
+                    R.id.end_station -> {
+                        findViewById<TextView>(R.id.tv_end_station).text =
+                            stations[m.tag as Int].StationName.Zh_tw
+                    }
+                    else -> { }
+                }
+                true
+            }
+            true
         }
     }
 }

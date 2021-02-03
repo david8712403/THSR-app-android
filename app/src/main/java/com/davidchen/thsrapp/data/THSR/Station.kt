@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 
 class Station {
     lateinit var StationName: Name
+    lateinit var StationID: String
     lateinit var StationAddress: String
     lateinit var StationPosition: Position
 
