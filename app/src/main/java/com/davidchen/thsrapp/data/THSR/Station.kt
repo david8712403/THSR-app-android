@@ -1,8 +1,9 @@
 package com.davidchen.thsrapp.data.THSR
 
 import com.google.android.gms.maps.model.LatLng
+import java.io.Serializable
 
-class Station {
+class Station : Serializable{
     lateinit var StationName: Name
     lateinit var StationID: String
     lateinit var StationAddress: String

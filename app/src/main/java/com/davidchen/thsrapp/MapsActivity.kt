@@ -1,21 +1,29 @@
 package com.davidchen.thsrapp
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.util.Log
+import android.view.animation.Animation
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.davidchen.thsrapp.data.THSR.Shape
 import com.davidchen.thsrapp.data.THSR.Station
+import com.davidchen.thsrapp.fragment.StationFragment
 import com.davidchen.thsrapp.http_api.THSR
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.gson.Gson
@@ -29,22 +37,54 @@ import java.io.IOException
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val REQUEST_PERMISSIONS = 1
+
+    private lateinit var flFragment: FrameLayout
+    private lateinit var btSearchStation: Button
     private lateinit var mMap: GoogleMap
+    private val mapMarkers = ArrayList<Marker>()
 
     private lateinit var stations: Array<Station>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+        initUi()
+
+        supportFragmentManager
+            .setFragmentResultListener(StationFragment.REQUEST_KEY, this) { _, bundle ->
+                val id = bundle.getString("stationId")
+                Log.d(this.javaClass.simpleName, "stationFragment: stationId -> $id")
+                for (m in mapMarkers) {
+                    if (m.tag == id) {
+                        m.showInfoWindow()
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.position, 10f))
+                    }
+                }
+            }
+
+        btSearchStation.setOnClickListener {
+            val f = StationFragment.newInstance(stations)
+
+            supportFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom, R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+                .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
+                .commit()
+        }
+
+        sendRequest()
+    }
+
+    private fun initUi() {
         if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+                        this,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                )
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_PERMISSIONS
+                    this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_PERMISSIONS
             )
         } else {
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -52,7 +92,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .findFragmentById(R.id.map) as SupportMapFragment
             mapFragment.getMapAsync(this)
         }
-        sendRequest()
+        flFragment = findViewById(R.id.fl_fragment)
+        btSearchStation = findViewById(R.id.bt_search_station)
     }
 
     override fun onRequestPermissionsResult(
@@ -60,6 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults.isEmpty()) {
             return
         }
@@ -90,6 +132,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val json = response.body()?.string()
                 if (json != null) {
                     Log.d(THSR.TAG, json)
+                    mapMarkers.clear()
                     stations = Gson().fromJson(json, Array<Station>::class.java)
                     for (s in stations) {
                         Log.d("[StationInfo]", s.toString())
@@ -99,11 +142,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             title(s.StationName.Zh_tw)
                         }
                         runOnUiThread {
-                            mMap.addMarker(marker).apply {
-                                tag = stations.indexOf(s)
+                            val m = mMap.addMarker(marker).apply {
+                                tag = s.StationID
                             }
+                            mapMarkers.add(m)
                         }
                     }
+                    runOnUiThread { btSearchStation.isEnabled = true }
                 }
             }
 
@@ -150,30 +195,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 8f))
         }
         mMap.setOnMarkerClickListener { m ->
-            m.showInfoWindow()
-            val popupMenu = PopupMenu(this, findViewById(R.id.v_popup_anchor))
-            popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
+//            val index = m.tag as Int
+//            // TODO("implement by Bottom Sheet Dialog Fragment")
+//            val popupMenu = PopupMenu(this, findViewById(R.id.v_popup_anchor))
+//            popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
+//            popupMenu.menu.findItem(R.id.station_name).title = stations[m.tag as Int].StationName.Zh_tw
+//            popupMenu.menu.findItem(R.id.station_name).isEnabled = false
+//
+//            popupMenu.setOnMenuItemClickListener{ item ->
+//                when(item.itemId) {
+//                    R.id.station_name -> {
+//                        // nothing
+//                    }
+//                    R.id.start_station -> {
+//                        findViewById<TextView>(R.id.tv_start_station).text =
+//                                stations[index].StationName.Zh_tw
+//                    }
+//                    R.id.end_station -> {
+//                        findViewById<TextView>(R.id.tv_end_station).text =
+//                                stations[index].StationName.Zh_tw
+//                    }
+//                    else -> { }
+//                }
+//                true
+//            }
+//            popupMenu.show()
+//            m.showInfoWindow()
 
-            popupMenu.menu.findItem(R.id.station_name).title = stations[m.tag as Int].StationName.Zh_tw
-
-            popupMenu.show()
-            popupMenu.setOnMenuItemClickListener{ item ->
-                when(item.itemId) {
-                    R.id.station_name -> {
-                        // nothing
-                    }
-                    R.id.start_station -> {
-                        findViewById<TextView>(R.id.tv_start_station).text =
-                            stations[m.tag as Int].StationName.Zh_tw
-                    }
-                    R.id.end_station -> {
-                        findViewById<TextView>(R.id.tv_end_station).text =
-                            stations[m.tag as Int].StationName.Zh_tw
-                    }
-                    else -> { }
-                }
-                true
-            }
             true
         }
     }

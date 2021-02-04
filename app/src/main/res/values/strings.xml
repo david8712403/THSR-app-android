@@ -14,5 +14,9 @@
     <string name="set_as_end">設定成終點</string>
     <string name="near_restaurant">附近餐廳</string>
     <string name="cancel">取消</string>
+    <string name="station_address">高鐵站地址</string>
+
+    <!-- station fragment -->
+    <string name="station_search_hint">請輸入站點名稱或地址</string>
 
 </resources>
