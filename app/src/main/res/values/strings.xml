@@ -3,12 +3,20 @@
     <string name="title_activity_maps">THSR Map</string>
 
     <!--  map fragment  -->
+    <string name="hsr_station">高鐵站</string>
     <string name="start_station">起點站</string>
     <string name="end_station">終點站</string>
     <string name="search_station">站點搜尋</string>
     <string name="search_path">路線規劃搜尋</string>
 
     <!--  station menu  -->
+    <string-array name="menu">
+        <item>站名</item>
+        <item>設定成起點</item>
+        <item>設定成終點</item>
+        <item>附近餐廳</item>
+        <item>取消</item>
+    </string-array>
     <string name="station_name">站名</string>
     <string name="set_as_start">設定成起點</string>
     <string name="set_as_end">設定成終點</string>

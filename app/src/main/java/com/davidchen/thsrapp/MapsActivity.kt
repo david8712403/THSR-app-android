@@ -1,21 +1,17 @@
 package com.davidchen.thsrapp
 
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.util.Log
-import android.view.animation.Animation
 import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.davidchen.thsrapp.data.THSR.Shape
 import com.davidchen.thsrapp.data.THSR.Station
+import com.davidchen.thsrapp.fragment.MenuDialogFragment
 import com.davidchen.thsrapp.fragment.StationFragment
 import com.davidchen.thsrapp.http_api.THSR
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -40,11 +36,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var flFragment: FrameLayout
     private lateinit var btSearchStation: Button
+    private lateinit var btSwap: Button
     private lateinit var mMap: GoogleMap
     private val mapMarkers = ArrayList<Marker>()
 
     private lateinit var stations: Array<Station>
+    private var startStation: Station? = null
+    private var endStation: Station? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -53,12 +53,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         supportFragmentManager
             .setFragmentResultListener(StationFragment.REQUEST_KEY, this) { _, bundle ->
-                val id = bundle.getString("stationId")
-                Log.d(this.javaClass.simpleName, "stationFragment: stationId -> $id")
-                for (m in mapMarkers) {
-                    if (m.tag == id) {
-                        m.showInfoWindow()
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.position, 10f))
+                val s = bundle.getSerializable("station") as Station
+                if(bundle.getString("operation") != null) {
+                    val operation = bundle.getString("operation")
+                    Log.d(this.javaClass.simpleName, "stationFragment: $operation -> ${s.StationName.Zh_tw}")
+                    when(bundle.getString("operation")) {
+                        "setAsStart" -> {
+                            findViewById<TextView>(R.id.tv_start_station).text =
+                                "${s.StationName.Zh_tw}${getString(R.string.hsr_station)}"
+                            startStation = s
+                        }
+                        "setAsEnd" -> {
+                            findViewById<TextView>(R.id.tv_end_station).text =
+                                "${s.StationName.Zh_tw}${getString(R.string.hsr_station)}"
+                            endStation = s
+                        }
+                        "moveCamera" -> {
+                            for (m in mapMarkers) {
+                                if ((m.tag as Station) == s) {
+                                    m.showInfoWindow()
+                                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.position, 10f))
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -70,6 +87,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom, R.anim.enter_from_bottom, R.anim.exit_to_bottom)
                 .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
                 .commit()
+        }
+
+        btSwap.setOnClickListener {
+            if (startStation != null && endStation != null) {
+                val temp = startStation
+                startStation = endStation
+                endStation = temp
+                findViewById<TextView>(R.id.tv_start_station).text =
+                    "${startStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
+                findViewById<TextView>(R.id.tv_end_station).text =
+                    "${endStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
+            }
         }
 
         sendRequest()
@@ -94,6 +123,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         flFragment = findViewById(R.id.fl_fragment)
         btSearchStation = findViewById(R.id.bt_search_station)
+        btSwap = findViewById(R.id.bt_swap)
     }
 
     override fun onRequestPermissionsResult(
@@ -143,7 +173,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         runOnUiThread {
                             val m = mMap.addMarker(marker).apply {
-                                tag = s.StationID
+                                tag = s
                             }
                             mapMarkers.add(m)
                         }
@@ -190,37 +220,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.isMyLocationEnabled = true
 
         val locCenter = LatLng(23.6, 120.973882)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 8f))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 7.8f))
         findViewById<Button>(R.id.bt_view_all).setOnClickListener {
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 8f))
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 7.8f))
         }
         mMap.setOnMarkerClickListener { m ->
-//            val index = m.tag as Int
-//            // TODO("implement by Bottom Sheet Dialog Fragment")
-//            val popupMenu = PopupMenu(this, findViewById(R.id.v_popup_anchor))
-//            popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
-//            popupMenu.menu.findItem(R.id.station_name).title = stations[m.tag as Int].StationName.Zh_tw
-//            popupMenu.menu.findItem(R.id.station_name).isEnabled = false
-//
-//            popupMenu.setOnMenuItemClickListener{ item ->
-//                when(item.itemId) {
-//                    R.id.station_name -> {
-//                        // nothing
-//                    }
-//                    R.id.start_station -> {
-//                        findViewById<TextView>(R.id.tv_start_station).text =
-//                                stations[index].StationName.Zh_tw
-//                    }
-//                    R.id.end_station -> {
-//                        findViewById<TextView>(R.id.tv_end_station).text =
-//                                stations[index].StationName.Zh_tw
-//                    }
-//                    else -> { }
-//                }
-//                true
-//            }
-//            popupMenu.show()
-//            m.showInfoWindow()
+            // TODO("implement by Bottom Sheet Dialog Fragment")
+            MenuDialogFragment.newInstance(
+                resources.getStringArray(R.array.menu),
+                m.tag as Station,
+                startStation,
+                endStation
+            )
+                .show(supportFragmentManager, "dialog")
+            m.showInfoWindow()
 
             true
         }

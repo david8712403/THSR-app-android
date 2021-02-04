@@ -60,10 +60,11 @@ class StationFragment : Fragment() {
         })
 
         adapter = StationAdapter(stations)
-        adapter.callback = object : StationAdapterCallback {
-            override fun onClick(stationId: String) {
+        adapter.callback = object : StationAdapter.Callback {
+            override fun onClick(station: Station) {
                 val b = Bundle()
-                b.putString("stationId", stationId)
+                b.putString("operation", "moveCamera")
+                b.putSerializable("station", station)
                 parentFragmentManager.setFragmentResult(REQUEST_KEY, b)
                 parentFragmentManager.popBackStack()
             }
@@ -95,7 +96,7 @@ class StationFragment : Fragment() {
     class StationAdapter(private val stations: Array<Station>):
         RecyclerView.Adapter<StationAdapter.ViewHolder>() {
 
-        var callback: StationAdapterCallback? = null
+        var callback: Callback? = null
 
         lateinit var v: View
 
@@ -116,16 +117,16 @@ class StationFragment : Fragment() {
             holder.tvName.text = stations[position].StationName.Zh_tw
             holder.tvAddr.text = stations[position].StationAddress
             holder.itemView.setOnClickListener {
-                callback?.onClick(stations[position].StationID)
+                callback?.onClick(stations[position])
             }
         }
 
         override fun getItemCount(): Int {
             return stations.size
         }
-    }
 
-    interface StationAdapterCallback {
-        fun onClick(stationId: String)
+        interface Callback {
+            fun onClick(station: Station)
+        }
     }
 }
