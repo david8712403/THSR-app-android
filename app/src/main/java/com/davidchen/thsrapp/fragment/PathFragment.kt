@@ -1,5 +1,6 @@
 package com.davidchen.thsrapp.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.DailyOriginToDestination
 import com.davidchen.thsrapp.data.THSR.Station
+import java.text.SimpleDateFormat
+import java.util.*
 
 private lateinit var paths: Array<DailyOriginToDestination>
 
@@ -111,6 +114,7 @@ class PathFragment : Fragment() {
             return ViewHolder(v)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: PathAdapter.ViewHolder, position: Int) {
             val path = paths[position]
             holder.tvTrainDirection.text = if (path.DailyTrainInfo.Direction == 0) {
@@ -118,6 +122,19 @@ class PathFragment : Fragment() {
             } else {
                 holder.itemView.context.getString(R.string.north)
             }
+
+            val df = SimpleDateFormat("HH:mm", Locale.ROOT)
+            val departureTime = df.parse(path.OriginStopTime.DepartureTime)!!.time
+            val arrivalTime = df.parse(path.DestinationStopTime.ArrivalTime)!!.time
+            val delta = (arrivalTime - departureTime).toInt().div(60 * 1000)
+            val hour = delta.div(60).toString()
+            val minute = if (delta.rem(60) < 10) {
+                "0${delta.rem(60)}"
+            }else {
+                "${delta.rem(60)}"
+            }
+            holder.tvDuration.text = "$hour:$minute"
+
             holder.tvTrainNo.text = path.DailyTrainInfo.TrainNo
             holder.tvDepartureTime.text = path.OriginStopTime.DepartureTime
             holder.tvArrivalTime.text = path.DestinationStopTime.ArrivalTime
