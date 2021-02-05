@@ -15,10 +15,7 @@ import com.davidchen.thsrapp.data.THSR.Shape
 import com.davidchen.thsrapp.data.THSR.Station
 import com.davidchen.thsrapp.fragment.MenuDialogFragment
 import com.davidchen.thsrapp.fragment.StationFragment
-import com.davidchen.thsrapp.http_api.GetDailyTimetable
-import com.davidchen.thsrapp.http_api.GetShape
-import com.davidchen.thsrapp.http_api.GetStation
-import com.davidchen.thsrapp.http_api.THSR
+import com.davidchen.thsrapp.http_api.THSR.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -107,7 +104,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btSearchPath.setOnClickListener {
-            val reqDailyTimetable = GetDailyTimetable(
+            val reqDailyTimetable = Api.GetDailyTimetable(
                     startStation!!.StationID,
                     endStation!!.StationID,
                     Calendar.getInstance().time
@@ -119,7 +116,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 override fun onResponse(call: Call, response: Response) {
                     val json = response.body()?.string()
-                    json?.let { it1 -> Log.d("${THSR.TAG}:GetDailyTimetable", it1) }
+                    json?.let { it1 -> Log.d("${ApiBuilder.TAG}:GetDailyTimetable", it1) }
                     // TODO("PathFragment")
                 }
 
@@ -189,7 +186,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun sendRequest() {
-        val req = GetStation().getRequest()
+        val req = Api.GetStation().getRequest()
 
         OkHttpClient().newCall(req).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -199,7 +196,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onResponse(call: Call, response: Response) {
                 val json = response.body()?.string()
                 if (json != null) {
-                    Log.d(THSR.TAG, json)
+                    Log.d(ApiBuilder.TAG, json)
                     mapMarkers.clear()
                     stations = Gson().fromJson(json, Array<Station>::class.java)
                     for (s in stations) {
@@ -222,7 +219,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         })
 
-        val reqShape = GetShape().getRequest()
+        val reqShape = Api.GetShape().getRequest()
         OkHttpClient().newCall(reqShape).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.message?.let { createFailureDialog(it) }

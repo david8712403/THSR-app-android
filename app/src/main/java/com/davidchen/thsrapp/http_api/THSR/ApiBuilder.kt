@@ -1,17 +1,15 @@
-package com.davidchen.thsrapp.http_api
+package com.davidchen.thsrapp.http_api.THSR
 
 import android.util.Base64
 import com.davidchen.thsrapp.BuildConfig.*
 import com.davidchen.thsrapp.Util.Companion.getServerTime
-import com.davidchen.thsrapp.data.THSR.Station
 import okhttp3.HttpUrl
 import okhttp3.Request
 import java.security.SignatureException
-import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-abstract class THSR {
+abstract class ApiBuilder {
 
     // base -> https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/
     var baseUrlBuilder: HttpUrl.Builder = HttpUrl.Builder()
