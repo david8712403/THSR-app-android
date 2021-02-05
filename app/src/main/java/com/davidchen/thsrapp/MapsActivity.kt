@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.davidchen.thsrapp.data.THSR.Shape
@@ -37,6 +38,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var flFragment: FrameLayout
     private lateinit var btSearchStation: Button
+    private lateinit var btSearchPath: Button
     private lateinit var btSwap: Button
     private lateinit var mMap: GoogleMap
     private val mapMarkers = ArrayList<Marker>()
@@ -85,6 +87,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             Log.e("FragmentResult", "unknown operation")
                         }
                     }
+                    if (startStation != null && endStation != null)
+                        btSearchPath.isEnabled = true
                 }
             }
 
@@ -95,6 +99,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom, R.anim.enter_from_bottom, R.anim.exit_to_bottom)
                 .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
                 .commit()
+        }
+
+        btSearchPath.setOnClickListener {
+            // TODO("PathFragment")
+            // TODO("Implement HTTP DailyTimetable api")
         }
 
         btSwap.setOnClickListener {
@@ -131,6 +140,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         flFragment = findViewById(R.id.fl_fragment)
         btSearchStation = findViewById(R.id.bt_search_station)
+        btSearchPath = findViewById(R.id.bt_search_path)
         btSwap = findViewById(R.id.bt_swap)
     }
 
@@ -163,7 +173,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         OkHttpClient().newCall(req).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                TODO("Not yet implemented")
+                e.message?.let { createFailureDialog(it) }
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -195,7 +205,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val reqShape = THSR.getRequest(THSR.APIs.SHAPE)
         OkHttpClient().newCall(reqShape).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                TODO("Not yet implemented")
+                e.message?.let { createFailureDialog(it) }
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -233,17 +243,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(locCenter, 7.8f))
         }
         mMap.setOnMarkerClickListener { m ->
-            // TODO("implement by Bottom Sheet Dialog Fragment")
             MenuDialogFragment.newInstance(
                 resources.getStringArray(R.array.menu),
                 m.tag as Station,
                 startStation,
                 endStation
-            )
-                .show(supportFragmentManager, "dialog")
+            ).show(supportFragmentManager, "dialog")
             m.showInfoWindow()
 
             true
         }
+    }
+
+    private fun createFailureDialog(msg: String) {
+        AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage(msg)
+                .show()
     }
 }
