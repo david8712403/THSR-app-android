@@ -1,6 +1,7 @@
 package com.davidchen.thsrapp
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -49,15 +50,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
+        // set orientaion to protrait.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         initUi()
 
         supportFragmentManager
             .setFragmentResultListener(StationFragment.REQUEST_KEY, this) { _, bundle ->
-                val s = bundle.getSerializable("station") as Station
-                if(bundle.getString("operation") != null) {
+                val s = bundle.getSerializable("station") as Station?
+                val op = bundle.getString("operation")
+                if(s != null) {
                     val operation = bundle.getString("operation")
                     Log.d(this.javaClass.simpleName, "stationFragment: $operation -> ${s.StationName.Zh_tw}")
-                    when(bundle.getString("operation")) {
+                    when(op) {
                         "setAsStart" -> {
                             findViewById<TextView>(R.id.tv_start_station).text =
                                 "${s.StationName.Zh_tw}${getString(R.string.hsr_station)}"
@@ -75,6 +80,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.position, 10f))
                                 }
                             }
+                        }
+                        else -> {
+                            Log.e("FragmentResult", "unknown operation")
                         }
                     }
                 }

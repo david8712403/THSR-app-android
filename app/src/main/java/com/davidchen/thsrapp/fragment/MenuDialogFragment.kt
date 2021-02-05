@@ -1,6 +1,8 @@
 package com.davidchen.thsrapp.fragment
 
+import android.annotation.SuppressLint
 import android.app.Dialog
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -105,9 +107,11 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
             return ViewHolder(LayoutInflater.from(parent.context), parent)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if(position == 0) {
-                holder.text.text = station.StationName.Zh_tw
+                holder.text.text = station.StationName.Zh_tw + getString(R.string.hsr_station)
+                holder.text.setTypeface(holder.text.typeface, Typeface.BOLD)
             }else {
                 // if station have been selected, disable set as start/end item
                 if ((startStation == station || endStation == station) &&
