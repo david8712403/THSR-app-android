@@ -107,7 +107,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btSearchPath.setOnClickListener {
-            // TODO("PathFragment")
             val reqDailyTimetable = GetDailyTimetable(
                     startStation!!.StationID,
                     endStation!!.StationID,
@@ -121,6 +120,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 override fun onResponse(call: Call, response: Response) {
                     val json = response.body()?.string()
                     json?.let { it1 -> Log.d("${THSR.TAG}:GetDailyTimetable", it1) }
+                    // TODO("PathFragment")
                 }
 
             })
