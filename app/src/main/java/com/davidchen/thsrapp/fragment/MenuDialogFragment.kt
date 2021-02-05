@@ -23,8 +23,8 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
     lateinit var rvMenu: RecyclerView
     lateinit var menuItems: Array<String>
     lateinit var station: Station
-    var startStation: Station? = null
-    var endStation: Station? = null
+    var originStation: Station? = null
+    var destinationStation: Station? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,8 +34,8 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
         initUi()
         val adapter = arguments?.getStringArray("menuItems")?.let { ItemAdapter(it) }
         station = arguments?.getSerializable("station") as Station
-        startStation = arguments?.getSerializable("startStation") as? Station
-        endStation = arguments?.getSerializable("endStation") as? Station
+        originStation = arguments?.getSerializable("originStation") as? Station
+        destinationStation = arguments?.getSerializable("destinationStation") as? Station
         rvMenu.layoutManager = LinearLayoutManager(context)
         rvMenu.adapter = adapter
 
@@ -45,12 +45,12 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
                 b.putSerializable("station", station)
                 when(position) {
                     1 -> { // set station as start
-                        b.putString("operation", "setAsStart")
+                        b.putString("operation", "setAsOrigin")
                         parentFragmentManager.setFragmentResult(StationFragment.REQUEST_KEY, b)
                         this@MenuDialogFragment.dismiss()
                     }
                     2 -> { // set station as end
-                        b.putString("operation", "setAsEnd")
+                        b.putString("operation", "setAsDestination")
                         parentFragmentManager.setFragmentResult(StationFragment.REQUEST_KEY, b)
                         this@MenuDialogFragment.dismiss()
                     }
@@ -113,8 +113,8 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
                 holder.text.text = station.StationName.Zh_tw + getString(R.string.hsr_station)
                 holder.text.setTypeface(holder.text.typeface, Typeface.BOLD)
             }else {
-                // if station have been selected, disable set as start/end item
-                if ((startStation == station || endStation == station) &&
+                // if station have been selected, disable set as origin/destination item
+                if ((originStation == station || destinationStation == station) &&
                     (position == 1 || position == 2)) {
                     holder.itemView.isEnabled = false
                 }
@@ -136,13 +136,13 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
 
-        fun newInstance(str: Array<String>, station: Station, startStation: Station?, endStation: Station?): MenuDialogFragment =
+        fun newInstance(str: Array<String>, station: Station, originStation: Station?, destinationStation: Station?): MenuDialogFragment =
             MenuDialogFragment().apply {
                 arguments = Bundle().apply {
                     putStringArray("menuItems", str)
                     putSerializable("station", station)
-                    putSerializable("startStation", startStation)
-                    putSerializable("endStation", endStation)
+                    putSerializable("originStation", originStation)
+                    putSerializable("destinationStation", destinationStation)
                 }
             }
 

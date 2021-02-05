@@ -5,12 +5,12 @@
         android:title="@string/station_name" />
 
     <item
-        android:id="@+id/start_station"
-        android:title="@string/start_station" />
+        android:id="@+id/origin_station"
+        android:title="@string/origin_station" />
 
     <item
-        android:id="@+id/end_station"
-        android:title="@string/end_station" />
+        android:id="@+id/destination_station"
+        android:title="@string/destination_station" />
 
     <item
         android:id="@+id/near_restaurant"

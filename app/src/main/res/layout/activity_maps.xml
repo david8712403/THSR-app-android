@@ -48,19 +48,19 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@android:color/white"
-                    android:text="@string/start_station" />
+                    android:text="@string/origin_station" />
 
                 <Space
                     android:layout_width="30dp"
                     android:layout_height="match_parent" />
 
                 <TextView
-                    android:id="@+id/tv_start_station"
+                    android:id="@+id/tv_origin_station"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@android:color/white"
-                    android:text="@string/start_station" />
+                    android:text="@string/origin_station" />
 
             </LinearLayout>
 
@@ -74,19 +74,19 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@android:color/white"
-                    android:text="@string/end_station" />
+                    android:text="@string/destination_station" />
 
                 <Space
                     android:layout_width="30dp"
                     android:layout_height="match_parent" />
 
                 <TextView
-                    android:id="@+id/tv_end_station"
+                    android:id="@+id/tv_destination_station"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@android:color/white"
-                    android:text="@string/end_station" />
+                    android:text="@string/destination_station" />
 
             </LinearLayout>
 

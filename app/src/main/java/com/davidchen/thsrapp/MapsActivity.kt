@@ -46,8 +46,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val mapMarkers = ArrayList<Marker>()
 
     private lateinit var stations: Array<Station>
-    private var startStation: Station? = null
-    private var endStation: Station? = null
+    private var originStation: Station? = null
+    private var destinationStation: Station? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,15 +67,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     val operation = bundle.getString("operation")
                     Log.d(this.javaClass.simpleName, "stationFragment: $operation -> ${s.StationName.Zh_tw}")
                     when(op) {
-                        "setAsStart" -> {
-                            findViewById<TextView>(R.id.tv_start_station).text =
+                        "setAsOrigin" -> {
+                            findViewById<TextView>(R.id.tv_origin_station).text =
                                 "${s.StationName.Zh_tw}${getString(R.string.hsr_station)}"
-                            startStation = s
+                            originStation = s
                         }
-                        "setAsEnd" -> {
-                            findViewById<TextView>(R.id.tv_end_station).text =
+                        "setAsDestination" -> {
+                            findViewById<TextView>(R.id.tv_destination_station).text =
                                 "${s.StationName.Zh_tw}${getString(R.string.hsr_station)}"
-                            endStation = s
+                            destinationStation = s
                         }
                         "moveCamera" -> {
                             for (m in mapMarkers) {
@@ -89,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             Log.e("FragmentResult", "unknown operation")
                         }
                     }
-                    if (startStation != null && endStation != null)
+                    if (originStation != null && destinationStation != null)
                         btSearchPath.isEnabled = true
                 }
             }
@@ -105,8 +105,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         btSearchPath.setOnClickListener {
             val reqDailyTimetable = Api.GetDailyTimetable(
-                    startStation!!.StationID,
-                    endStation!!.StationID,
+                    originStation!!.StationID,
+                    destinationStation!!.StationID,
                     Calendar.getInstance().time
             ).getRequest()
             OkHttpClient().newCall(reqDailyTimetable).enqueue(object : Callback {
@@ -124,14 +124,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btSwap.setOnClickListener {
-            if (startStation != null && endStation != null) {
-                val temp = startStation
-                startStation = endStation
-                endStation = temp
-                findViewById<TextView>(R.id.tv_start_station).text =
-                    "${startStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
-                findViewById<TextView>(R.id.tv_end_station).text =
-                    "${endStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
+            if (originStation != null && destinationStation != null) {
+                val temp = originStation
+                originStation = destinationStation
+                destinationStation = temp
+                findViewById<TextView>(R.id.tv_origin_station).text =
+                    "${originStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
+                findViewById<TextView>(R.id.tv_destination_station).text =
+                    "${destinationStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
             }
         }
 
@@ -263,8 +263,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             MenuDialogFragment.newInstance(
                 resources.getStringArray(R.array.menu),
                 m.tag as Station,
-                startStation,
-                endStation
+                originStation,
+                destinationStation
             ).show(supportFragmentManager, "dialog")
             m.showInfoWindow()
 
