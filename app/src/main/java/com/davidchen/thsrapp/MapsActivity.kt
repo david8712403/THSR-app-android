@@ -15,6 +15,9 @@ import com.davidchen.thsrapp.data.THSR.Shape
 import com.davidchen.thsrapp.data.THSR.Station
 import com.davidchen.thsrapp.fragment.MenuDialogFragment
 import com.davidchen.thsrapp.fragment.StationFragment
+import com.davidchen.thsrapp.http_api.GetDailyTimetable
+import com.davidchen.thsrapp.http_api.GetShape
+import com.davidchen.thsrapp.http_api.GetStation
 import com.davidchen.thsrapp.http_api.THSR
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -30,6 +33,8 @@ import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -103,7 +108,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         btSearchPath.setOnClickListener {
             // TODO("PathFragment")
-            // TODO("Implement HTTP DailyTimetable api")
+            val reqDailyTimetable = GetDailyTimetable(
+                    startStation!!.StationID,
+                    endStation!!.StationID,
+                    Calendar.getInstance().time
+            ).getRequest()
+            OkHttpClient().newCall(reqDailyTimetable).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.message?.let { createFailureDialog(it) }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val json = response.body()?.string()
+                    json?.let { it1 -> Log.d("${THSR.TAG}:GetDailyTimetable", it1) }
+                }
+
+            })
         }
 
         btSwap.setOnClickListener {
@@ -169,7 +189,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun sendRequest() {
-        val req = THSR.getRequest(THSR.APIs.STATION)
+        val req = GetStation().getRequest()
 
         OkHttpClient().newCall(req).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -202,7 +222,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         })
 
-        val reqShape = THSR.getRequest(THSR.APIs.SHAPE)
+        val reqShape = GetShape().getRequest()
         OkHttpClient().newCall(reqShape).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.message?.let { createFailureDialog(it) }
