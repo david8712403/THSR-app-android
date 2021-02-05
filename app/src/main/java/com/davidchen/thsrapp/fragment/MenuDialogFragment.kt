@@ -136,7 +136,6 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
 
-        // TODO: Customize parameters
         fun newInstance(str: Array<String>, station: Station, startStation: Station?, endStation: Station?): MenuDialogFragment =
             MenuDialogFragment().apply {
                 arguments = Bundle().apply {
