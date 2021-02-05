@@ -9,12 +9,12 @@ class Station : Serializable{
     lateinit var StationAddress: String
     lateinit var StationPosition: Position
 
-    class Name {
+    class Name : Serializable{
         val Zh_tw: String = ""
         val En: String = ""
     }
 
-    class Position {
+    class Position : Serializable{
         val PositionLat = 0.0
         val PositionLon = 0.0
     }

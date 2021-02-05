@@ -1,13 +1,14 @@
 package com.davidchen.thsrapp.data.THSR
 
 import com.google.android.gms.maps.model.LatLng
+import java.io.Serializable
 
-class Shape {
+class Shape : Serializable{
     lateinit var LineID: String
     lateinit var LineName: Name
     lateinit var Geometry: String
 
-    class Name {
+    class Name : Serializable{
         val Zh_tw: String = ""
         val En: String = ""
     }
