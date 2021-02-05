@@ -1,6 +1,7 @@
 package com.davidchen.thsrapp.http_api.THSR
 
 import android.util.Base64
+import android.util.Log
 import com.davidchen.thsrapp.BuildConfig.*
 import com.davidchen.thsrapp.Util.Companion.getServerTime
 import okhttp3.HttpUrl
@@ -32,39 +33,40 @@ abstract class ApiBuilder {
         const val TAG = "THSR"
     }
 
-    fun select(s: String): HttpUrl.Builder {
+    fun select(s: String): ApiBuilder {
         select = s
-        baseUrlBuilder.addQueryParameter("select", select)
-        return this.baseUrlBuilder
+        baseUrlBuilder.addQueryParameter("\$select", select)
+        return this
     }
 
-    fun filter(s: String): HttpUrl.Builder {
+    fun filter(s: String): ApiBuilder {
         filter = s
-        baseUrlBuilder.addQueryParameter("filter", filter)
-        return this.baseUrlBuilder
+        baseUrlBuilder.addQueryParameter("\$filter", filter)
+        return this
     }
 
-    fun orderby(s: String): HttpUrl.Builder {
+    fun orderby(s: String): ApiBuilder {
         orderby = s
-        baseUrlBuilder.addQueryParameter("orderby", orderby)
-        return this.baseUrlBuilder
+        baseUrlBuilder.addQueryParameter("\$orderby", orderby)
+        return this
     }
 
-    fun top(i: Int): HttpUrl.Builder {
+    fun top(i: Int): ApiBuilder {
         top = i
-        baseUrlBuilder.addQueryParameter("top", top.toString())
-        return this.baseUrlBuilder
+        baseUrlBuilder.addQueryParameter("\$top", top.toString())
+        return this
     }
 
-    fun skip(i: Int): HttpUrl.Builder {
+    fun skip(i: Int): ApiBuilder {
         skip = i
-        baseUrlBuilder.addQueryParameter("skip", skip.toString())
-        return this.baseUrlBuilder
+        baseUrlBuilder.addQueryParameter("\$skip", skip.toString())
+        return this
     }
 
     fun getRequest(): Request {
         httpUrl = baseUrlBuilder
-                .addQueryParameter("format","JSON").build()
+                .addQueryParameter("\$format","JSON").build()
+        Log.d("Request", httpUrl.toString())
         return Request.Builder()
             .url(httpUrl)
             .addHeader("Authorization", getAuthString())

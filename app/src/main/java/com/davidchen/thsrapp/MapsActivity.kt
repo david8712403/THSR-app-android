@@ -11,9 +11,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.davidchen.thsrapp.data.THSR.DailyOriginToDestination
 import com.davidchen.thsrapp.data.THSR.Shape
 import com.davidchen.thsrapp.data.THSR.Station
 import com.davidchen.thsrapp.fragment.MenuDialogFragment
+import com.davidchen.thsrapp.fragment.PathFragment
 import com.davidchen.thsrapp.fragment.StationFragment
 import com.davidchen.thsrapp.http_api.THSR.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -54,7 +56,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-        // set orientaion to protrait.
+        // set orientation to portrait.
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         initUi()
@@ -108,7 +110,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     originStation!!.StationID,
                     destinationStation!!.StationID,
                     Calendar.getInstance().time
-            ).getRequest()
+            ).orderby("OriginStopTime/DepartureTime").getRequest()
             OkHttpClient().newCall(reqDailyTimetable).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     e.message?.let { createFailureDialog(it) }
@@ -116,8 +118,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 override fun onResponse(call: Call, response: Response) {
                     val json = response.body()?.string()
-                    json?.let { it1 -> Log.d("${ApiBuilder.TAG}:GetDailyTimetable", it1) }
-                    // TODO("PathFragment")
+                    if (json != null) {
+                        Log.d("${ApiBuilder.TAG}:GetDailyTimetable", json)
+                        val paths = Gson().fromJson(json, Array<DailyOriginToDestination>::class.java)
+                        val f = PathFragment.newInstance(
+                            paths,
+                            originStation!!,
+                            destinationStation!!
+                        )
+                        supportFragmentManager.beginTransaction()
+                            .setCustomAnimations(
+                                R.anim.enter_from_right,
+                                R.anim.exit_to_right,
+                                R.anim.enter_from_right,
+                                R.anim.exit_to_right
+                            )
+                            .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
+                            .commit()
+                    }else {
+                        Log.e("${ApiBuilder.TAG}:GetDailyTimetable", "empty")
+                    }
                 }
 
             })
