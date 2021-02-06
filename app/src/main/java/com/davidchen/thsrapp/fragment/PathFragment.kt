@@ -68,7 +68,8 @@ class PathFragment : Fragment() {
         adapter = PathAdapter(paths)
         adapter.callback = object : PathAdapter.Callback {
             override fun onClick(path: DailyOriginToDestination) {
-                ProgressDialogUtil.showProgressDialog(requireContext(),
+                ProgressDialogUtil.showProgressDialog(
+                    requireContext(),
                     "Get train No.${path.DailyTrainInfo.TrainNo} detail")
                 val reqDailyTrainStopTime = Api.GetDailyTrainStopTime(
                     path.DailyTrainInfo.TrainNo

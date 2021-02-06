@@ -62,6 +62,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // set orientation to portrait.
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_PERMISSIONS
+            )
+        } else {
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+            sendRequest()
+        }
+
         initUi()
         ProgressDialogUtil.showProgressDialog(this, "init")
 
@@ -111,16 +125,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .commit()
         }
 
+        // Click search button
         btSearchPath.setOnClickListener {
 
+            // if one of origin or destination station is null, return
             if (originStation == null || destinationStation == null) {
                 return@setOnClickListener
             }
 
+            // Show progress dialog
             ProgressDialogUtil.showProgressDialog(this,
                 "Get ${originStation!!.StationName.Zh_tw} -> ${destinationStation!!.StationName.Zh_tw}")
 
-            // GET DailyTimetable
+            // Call GET DailyTimetable
             val reqDailyTimetable = Api.GetDailyTimetable(
                     originStation!!.StationID,
                     destinationStation!!.StationID,
@@ -160,6 +177,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             })
         }
 
+        // click swap button, origin <--> destination
         btSwap.setOnClickListener {
             if (originStation != null && destinationStation != null) {
                 val temp = originStation
@@ -171,31 +189,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     "${destinationStation!!.StationName.Zh_tw}${getString(R.string.hsr_station)}"
             }
         }
-
-        sendRequest()
     }
 
     private fun initUi() {
-        if (ActivityCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_PERMISSIONS
-            )
-        } else {
-            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            val mapFragment = supportFragmentManager
-                    .findFragmentById(R.id.map) as SupportMapFragment
-            mapFragment.getMapAsync(this)
-        }
         flFragment = findViewById(R.id.fl_fragment)
         btSearchStation = findViewById(R.id.bt_search_station)
         btSearchPath = findViewById(R.id.bt_search_path)
         btSwap = findViewById(R.id.bt_swap)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0 ) {
+            finish()
+        }else {
+            supportFragmentManager.popBackStack()
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -216,6 +224,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         val map =
                             supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
                         map.getMapAsync(this)
+                        sendRequest()
                     }
                 }
             }
