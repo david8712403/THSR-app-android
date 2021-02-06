@@ -25,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="10"
         android:background="@color/cardview_dark_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +32,7 @@
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            android:layout_weight="9"
+            android:layout_weight="10"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -46,7 +45,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/white"
                     android:text="@string/origin_station" />
 
@@ -58,7 +57,7 @@
                     android:id="@+id/tv_origin_station"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/white"
                     android:text="@string/origin_station" />
 
@@ -72,7 +71,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/white"
                     android:text="@string/destination_station" />
 
@@ -84,7 +83,7 @@
                     android:id="@+id/tv_destination_station"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/white"
                     android:text="@string/destination_station" />
 
@@ -102,6 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:enabled="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:text="@string/search_station" />
 
                 <Button
@@ -110,17 +110,18 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:enabled="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:text="@string/search_path" />
             </LinearLayout>
 
         </LinearLayout>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_swap"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1" />
+            android:src="@android:drawable/ic_popup_sync"
+            android:layout_weight="2" />
 
     </LinearLayout>
 
