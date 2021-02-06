@@ -2,17 +2,28 @@ package com.davidchen.thsrapp.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.DailyOriginToDestination
+import com.davidchen.thsrapp.data.THSR.DailyTrainStopTime
 import com.davidchen.thsrapp.data.THSR.Station
+import com.davidchen.thsrapp.http_api.THSR.Api
+import com.davidchen.thsrapp.http_api.THSR.ApiBuilder
+import com.google.gson.Gson
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Response
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,7 +67,35 @@ class PathFragment : Fragment() {
         adapter = PathAdapter(paths)
         adapter.callback = object : PathAdapter.Callback {
             override fun onClick(path: DailyOriginToDestination) {
-                //TODO("Train detail fragment")
+
+                val reqDailyTrainStopTime = Api.GetDailyTrainStopTime(
+                    path.DailyTrainInfo.TrainNo
+                ).getRequest()
+                OkHttpClient().newCall(reqDailyTrainStopTime).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        e.message?.let { createFailureDialog(it) }
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        val json = response.body()?.string()
+                        if (json != null) {
+                            Log.d("${ApiBuilder.TAG}:GetTrainStopTime", json)
+                            val train = Gson().fromJson(json, Array<DailyTrainStopTime>::class.java)[0]
+                            val f = StopTimeFragment.newInstance(train, origin, destination)
+                            parentFragmentManager.beginTransaction()
+                                .setCustomAnimations(
+                                    R.anim.enter_from_right,
+                                    R.anim.exit_to_right,
+                                    R.anim.enter_from_right,
+                                    R.anim.exit_to_right
+                                )
+                                .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
+                                .commit()
+                        }else {
+                            Log.e("${ApiBuilder.TAG}:GetTrainStopTime", "empty")
+                        }
+                    }
+                })
             }
         }
         rvPath.adapter = adapter
@@ -73,6 +112,15 @@ class PathFragment : Fragment() {
         // set station title
         v.findViewById<TextView>(R.id.origin_station).text = origin.StationName.Zh_tw
         v.findViewById<TextView>(R.id.destination_station).text = destination.StationName.Zh_tw
+    }
+
+    private fun createFailureDialog(msg: String) {
+        Looper.prepare()
+        AlertDialog.Builder(this.requireContext())
+            .setTitle("Error")
+            .setMessage(msg)
+            .show()
+        Looper.loop()
     }
 
     companion object {

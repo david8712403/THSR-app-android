@@ -33,7 +33,15 @@
     <string name="north">北上</string>
     <string name="south">南下</string>
 
+    <!--  stop time fragment  -->
+    <string name="alone_the_way">沿途停靠</string>
+    <string name="expected_departure_time">表定發車</string>
+    <string name="timetable">時刻表</string>
+
     <!-- station fragment -->
     <string name="station_search_hint">請輸入站點名稱或地址</string>
+
+    <!--  dialog  -->
+    <string name="retry">重試</string>
 
 </resources>
