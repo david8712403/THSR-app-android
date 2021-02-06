@@ -67,4 +67,19 @@ class Api {
                     .addPathSegment(trainNo)
         }
     }
+
+    /**
+     * GetDailyTimetable
+     * HTTP API
+     * GET /v2/Rail/THSR/DailyTimetable/Today/TrainNo/{TrainNo}
+     */
+    class GetDailyTrainStopTime() : ApiBuilder() {
+        constructor(trainNo: String) : this() {
+            baseUrlBuilder
+                .addPathSegment("DailyTimetable")
+                .addPathSegment("Today")
+                .addPathSegment("TrainNo")
+                .addPathSegment(trainNo)
+        }
+    }
 }
