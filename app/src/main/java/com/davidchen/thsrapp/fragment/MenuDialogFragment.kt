@@ -4,10 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.LayoutDirection
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.davidchen.thsrapp.R
@@ -74,6 +78,12 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun initUi() {
+        val layoutParam = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        layoutParam.setMargins(30, 0, 30, 0)
+        v.layoutParams = layoutParam
         rvMenu = v.findViewById(R.id.list)
     }
 

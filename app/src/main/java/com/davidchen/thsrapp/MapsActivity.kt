@@ -1,6 +1,7 @@
 package com.davidchen.thsrapp
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -293,9 +294,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun createFailureDialog(msg: String) {
-        AlertDialog.Builder(this)
+        runOnUiThread {
+            val builder = AlertDialog.Builder(this)
+            val alert = builder
                 .setTitle("Error")
                 .setMessage(msg)
-                .show()
+                .setPositiveButton(R.string.retry, object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        dialog?.dismiss()
+                        sendRequest()
+                    }
+                })
+                .create()
+            alert.show()
+        }
     }
 }
