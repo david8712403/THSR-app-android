@@ -2,7 +2,6 @@ package com.davidchen
 
 import android.app.AlertDialog
 import android.content.Context
-import android.os.Looper
 import android.view.LayoutInflater
 import android.widget.TextView
 import com.davidchen.thsrapp.R

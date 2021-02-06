@@ -4,21 +4,28 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.LayoutDirection
-import android.view.Gravity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.davidchen.ProgressDialogUtil
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.Station
+import com.davidchen.thsrapp.http_api.bluenet.Api
+import com.davidchen.thsrapp.http_api.bluenet.ApiBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Response
+import java.io.IOException
+import java.util.*
 
 
 class MenuDialogFragment : BottomSheetDialogFragment() {
@@ -58,8 +65,27 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
                         parentFragmentManager.setFragmentResult(StationFragment.REQUEST_KEY, b)
                         this@MenuDialogFragment.dismiss()
                     }
-                    3 -> { // view restaurant nearby
+                    3 -> {
+                        ProgressDialogUtil.showProgressDialog(
+                            requireContext(),
+                            "取得${station.StationName.Zh_tw}${getString(R.string.hsr_station)}附近美食")
+                        val request = Api.GetRestaurant(count = 15,
+                            lat = station.getLatLng().latitude,
+                            lng = station.getLatLng().longitude,
+                            range = 2000).getRequest()
 
+                        OkHttpClient().newCall(request).enqueue(object : okhttp3.Callback {
+                            override fun onFailure(call: Call, e: IOException) {
+                                ProgressDialogUtil.dismiss()
+                                this@MenuDialogFragment.dismiss()
+                            }
+
+                            override fun onResponse(call: Call, response: Response) {
+                                ProgressDialogUtil.dismiss()
+                                Log.d(ApiBuilder.TAG, response.body()!!.string())
+                                this@MenuDialogFragment.dismiss()
+                            }
+                        })
                     }
                     4 -> { // cancel
                         this@MenuDialogFragment.dismiss()
