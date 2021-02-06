@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.davidchen.ProgressDialogUtil
 import com.davidchen.thsrapp.data.THSR.DailyOriginToDestination
 import com.davidchen.thsrapp.data.THSR.Shape
 import com.davidchen.thsrapp.data.THSR.Station
@@ -61,6 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         initUi()
+        ProgressDialogUtil.showProgressDialog(this, "init")
 
         supportFragmentManager
             .setFragmentResultListener(StationFragment.REQUEST_KEY, this) { _, bundle ->
@@ -107,6 +109,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btSearchPath.setOnClickListener {
+
+            if (originStation == null || destinationStation == null) {
+                return@setOnClickListener
+            }
+
+            ProgressDialogUtil.showProgressDialog(this,
+                "Get ${originStation!!.StationName.Zh_tw} -> ${destinationStation!!.StationName.Zh_tw}")
+
+            // GET DailyTimetable
             val reqDailyTimetable = Api.GetDailyTimetable(
                     originStation!!.StationID,
                     destinationStation!!.StationID,
@@ -114,10 +125,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             ).orderby("OriginStopTime/DepartureTime").getRequest()
             OkHttpClient().newCall(reqDailyTimetable).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    ProgressDialogUtil.dismiss()
                     e.message?.let { createFailureDialog(it) }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
+                    ProgressDialogUtil.dismiss()
                     val json = response.body()?.string()
                     if (json != null) {
                         Log.d("${ApiBuilder.TAG}:GetDailyTimetable", json)
@@ -207,6 +220,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun sendRequest() {
+        ProgressDialogUtil.showProgressDialog(this, "GetStation")
         val req = Api.GetStation().getRequest()
 
         OkHttpClient().newCall(req).enqueue(object : Callback {
@@ -240,13 +254,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         })
 
+        ProgressDialogUtil.showProgressDialog(this, "GetShape")
         val reqShape = Api.GetShape().getRequest()
         OkHttpClient().newCall(reqShape).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                ProgressDialogUtil.dismiss()
                 e.message?.let { createFailureDialog(it) }
             }
 
             override fun onResponse(call: Call, response: Response) {
+                ProgressDialogUtil.dismiss()
                 val json = response.body()?.string()
                 val line = Gson().fromJson(json, Array<Shape>::class.java)
                 runOnUiThread {

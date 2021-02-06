@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.davidchen.ProgressDialogUtil
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.DailyOriginToDestination
 import com.davidchen.thsrapp.data.THSR.DailyTrainStopTime
@@ -67,16 +68,19 @@ class PathFragment : Fragment() {
         adapter = PathAdapter(paths)
         adapter.callback = object : PathAdapter.Callback {
             override fun onClick(path: DailyOriginToDestination) {
-
+                ProgressDialogUtil.showProgressDialog(requireContext(),
+                    "Get train No.${path.DailyTrainInfo.TrainNo} detail")
                 val reqDailyTrainStopTime = Api.GetDailyTrainStopTime(
                     path.DailyTrainInfo.TrainNo
                 ).getRequest()
                 OkHttpClient().newCall(reqDailyTrainStopTime).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
+                        ProgressDialogUtil.dismiss()
                         e.message?.let { createFailureDialog(it) }
                     }
 
                     override fun onResponse(call: Call, response: Response) {
+                        ProgressDialogUtil.dismiss()
                         val json = response.body()?.string()
                         if (json != null) {
                             Log.d("${ApiBuilder.TAG}:GetTrainStopTime", json)
