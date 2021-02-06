@@ -41,6 +41,14 @@
     <!-- station fragment -->
     <string name="station_search_hint">請輸入站點名稱或地址</string>
 
+    <!--  restaurant fragment  -->
+    <string name="restaurant_name">餐廳名稱</string>
+    <string name="restaurant_address">餐廳地址</string>
+    <string name="restaurant_distance">距離</string>
+    <string name="restaurant_km">公里</string>
+    <string name="restaurant_rating">評價</string>
+    <string name="restaurant_review">則評論</string>
+
     <!--  dialog  -->
     <string name="retry">重試</string>
     <string name="loading">讀取中</string>

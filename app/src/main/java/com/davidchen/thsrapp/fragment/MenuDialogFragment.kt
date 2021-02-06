@@ -15,13 +15,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.davidchen.ProgressDialogUtil
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.Station
+import com.davidchen.thsrapp.data.bluenet.RawDataRestaurant
+import com.davidchen.thsrapp.data.bluenet.Restaurant
 import com.davidchen.thsrapp.http_api.bluenet.Api
 import com.davidchen.thsrapp.http_api.bluenet.ApiBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.gson.Gson
 import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
@@ -82,7 +84,22 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
 
                             override fun onResponse(call: Call, response: Response) {
                                 ProgressDialogUtil.dismiss()
-                                Log.d(ApiBuilder.TAG, response.body()!!.string())
+                                val json = response.body()!!.string()
+                                Log.d(ApiBuilder.TAG, json)
+                                val restaurants: Array<Restaurant> =
+                                    Gson().fromJson(json, RawDataRestaurant::class.java).results.content
+
+                                val f = RestaurantFragment.newInstance(station, restaurants)
+
+                                parentFragmentManager.beginTransaction()
+                                    .setCustomAnimations(
+                                        R.anim.enter_from_right,
+                                        R.anim.exit_to_right,
+                                        R.anim.enter_from_right,
+                                        R.anim.exit_to_right
+                                    )
+                                    .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
+                                    .commit()
                                 this@MenuDialogFragment.dismiss()
                             }
                         })
