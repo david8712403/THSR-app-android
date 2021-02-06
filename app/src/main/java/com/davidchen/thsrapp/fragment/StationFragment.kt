@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.Station
 
-private lateinit var stations: Array<Station>
+private lateinit var stations: ArrayList<Station>
 
 /**
  * A simple [Fragment] subclass.
@@ -43,19 +43,19 @@ class StationFragment : Fragment() {
         v = inflater.inflate(R.layout.fragment_station, container, false)
         initUi()
 
-        stations = arguments?.getSerializable("stations") as Array<Station>
+        stations = arguments?.getSerializable("stations") as ArrayList<Station>
         if (stations.isEmpty()) {
             Log.e(this.javaClass.name, "stations empty")
         }
 
         etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(str: CharSequence?, start: Int, before: Int, count: Int) {
-                TODO("implement search feature")
+            override fun onTextChanged(str: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                filter(s.toString())
             }
-
-            override fun afterTextChanged(s: Editable?) { }
 
         })
 
@@ -82,10 +82,20 @@ class StationFragment : Fragment() {
         etSearch = v.findViewById(R.id.et_search)
     }
 
+    private fun filter(text: String) {
+        val filteredList: ArrayList<Station> = ArrayList()
+        for (item in stations) {
+            if (item.StationAddress.contains(text.toLowerCase())) {
+                filteredList.add(item)
+            }
+        }
+        adapter.filterList(filteredList)
+    }
+
     companion object {
         val REQUEST_KEY = this.javaClass.simpleName
         @JvmStatic
-        fun newInstance(stations: Array<Station>) =
+        fun newInstance(stations: ArrayList<Station>) =
                 StationFragment().apply {
                     arguments = Bundle().apply {
                         putSerializable("stations", stations)
@@ -93,7 +103,7 @@ class StationFragment : Fragment() {
                 }
     }
 
-    class StationAdapter(private val stations: Array<Station>):
+    class StationAdapter(private var stations: ArrayList<Station>):
         RecyclerView.Adapter<StationAdapter.ViewHolder>() {
 
         var callback: Callback? = null
@@ -123,6 +133,11 @@ class StationFragment : Fragment() {
 
         override fun getItemCount(): Int {
             return stations.size
+        }
+
+        fun filterList(filteredList: ArrayList<Station>) {
+            stations = filteredList
+            notifyDataSetChanged()
         }
 
         interface Callback {

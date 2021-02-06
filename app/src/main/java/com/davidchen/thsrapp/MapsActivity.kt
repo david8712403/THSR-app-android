@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -45,7 +46,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var flFragment: FrameLayout
     private lateinit var btSearchStation: Button
     private lateinit var btSearchPath: Button
-    private lateinit var btSwap: Button
+    private lateinit var btSwap: ImageButton
     private lateinit var mMap: GoogleMap
     private val mapMarkers = ArrayList<Marker>()
 
@@ -100,7 +101,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
         btSearchStation.setOnClickListener {
-            val f = StationFragment.newInstance(stations)
+            val s = ArrayList<Station>()
+            s.addAll(stations)
+            val f = StationFragment.newInstance(s)
 
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom, R.anim.enter_from_bottom, R.anim.exit_to_bottom)
