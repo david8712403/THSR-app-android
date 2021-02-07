@@ -130,13 +130,6 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
         rvMenu = v.findViewById(R.id.list)
     }
 
-    override fun onStart() {
-        super.onStart()
-        //this forces the sheet to appear at max height even on landscape
-        val behavior = BottomSheetBehavior.from(requireView().parent as View)
-        behavior.state = BottomSheetBehavior.STATE_DRAGGING
-    }
-
     private inner class ViewHolder internal constructor(
         inflater: LayoutInflater,
         parent: ViewGroup

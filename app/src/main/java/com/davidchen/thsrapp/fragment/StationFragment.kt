@@ -84,13 +84,6 @@ class StationFragment : BottomSheetDialogFragment() {
         } else BottomSheetDialog(requireContext(), R.style.TransparentBottomSheetStyle)
     }
 
-    override fun onStart() {
-        super.onStart()
-        //this forces the sheet to appear at max height even on landscape
-        val behavior = BottomSheetBehavior.from(requireView().parent as View)
-        behavior.state = BottomSheetBehavior.STATE_DRAGGING
-    }
-
     private fun initUi() {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
