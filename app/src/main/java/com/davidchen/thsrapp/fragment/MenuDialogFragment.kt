@@ -165,10 +165,12 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
             if(position == 0) {
                 holder.text.text = station.StationName.Zh_tw + getString(R.string.hsr_station)
                 holder.text.setTypeface(holder.text.typeface, Typeface.BOLD)
+                holder.itemView.isEnabled = false
             }else {
                 // if station have been selected, disable set as origin/destination item
                 if ((originStation == station || destinationStation == station) &&
                     (position == 1 || position == 2)) {
+                    holder.text.isEnabled = false
                     holder.itemView.isEnabled = false
                 }
                 holder.text.text = strings[position]

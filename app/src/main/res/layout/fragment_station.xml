@@ -6,7 +6,7 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cardview_dark_background"
+    android:background="@drawable/rounded_dialog"
     tools:context=".fragment.StationFragment">
 
     <EditText
@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:inputType="text"
+        android:textColor="@color/white"
         android:hint="@string/station_search_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +24,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_station"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="600dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
