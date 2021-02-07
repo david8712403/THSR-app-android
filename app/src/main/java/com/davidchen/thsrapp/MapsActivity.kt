@@ -196,6 +196,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount == 0 ) {
             finish()
+            if (ProgressDialogUtil.mAlertDialog?.isShowing == false) {
+                ProgressDialogUtil.mAlertDialog = null
+            }
         }else {
             supportFragmentManager.popBackStack()
         }

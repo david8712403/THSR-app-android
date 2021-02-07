@@ -1,6 +1,5 @@
 package com.davidchen
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -25,8 +24,9 @@ class ProgressDialogUtil {
             mAlertDialog!!.setCanceledOnTouchOutside(false)
             mAlertDialog!!.setCancelable(false)
 
-            if (!mAlertDialog!!.isShowing)
+            if (!mAlertDialog!!.isShowing) {
                 mAlertDialog!!.show()
+            }
         }
 
         fun dismiss() {
