@@ -1,11 +1,9 @@
 package com.davidchen.thsrapp.http_api.bluenet
 
-import android.util.Log
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
 
 class Api {
     class GetRestaurant(count: Int, lat: Double, lng: Double, range: Int) : ApiBuilder() {
@@ -20,10 +18,11 @@ class Api {
             baseUrlBuilder
                 .addPathSegment("restaurant")
                 .addPathSegment("get")
-            val requestBody =
-                RequestBody.create(MediaType.parse(
-                    "application/json; charset=utf-8"),
-                    jsonObj.toString())
+
+            val requestBody = jsonObj
+                .toString()
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
             setBody(requestBody)
         }
     }

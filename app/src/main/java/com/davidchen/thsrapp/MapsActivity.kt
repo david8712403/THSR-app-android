@@ -146,7 +146,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 override fun onResponse(call: Call, response: Response) {
                     ProgressDialogUtil.dismiss()
-                    val json = response.body()?.string()
+                    val json = response.body?.string()
                     if (json != null) {
                         Log.d("${ApiBuilder.TAG}:GetDailyTimetable", json)
                         val paths = Gson().fromJson(json, Array<DailyOriginToDestination>::class.java)
@@ -239,7 +239,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val json = response.body()?.string()
+                val json = response.body?.string()
                 if (json != null) {
                     Log.d(ApiBuilder.TAG, json)
                     mapMarkers.clear()
@@ -274,7 +274,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             override fun onResponse(call: Call, response: Response) {
                 ProgressDialogUtil.dismiss()
-                val json = response.body()?.string()
+                val json = response.body?.string()
                 val line = Gson().fromJson(json, Array<Shape>::class.java)
                 runOnUiThread {
                     val polyline =

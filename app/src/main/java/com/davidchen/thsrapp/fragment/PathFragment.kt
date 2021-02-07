@@ -82,7 +82,7 @@ class PathFragment : Fragment() {
 
                     override fun onResponse(call: Call, response: Response) {
                         ProgressDialogUtil.dismiss()
-                        val json = response.body()?.string()
+                        val json = response.body?.string()
                         if (json != null) {
                             Log.d("${ApiBuilder.TAG}:GetTrainStopTime", json)
                             val train = Gson().fromJson(json, Array<DailyTrainStopTime>::class.java)[0]

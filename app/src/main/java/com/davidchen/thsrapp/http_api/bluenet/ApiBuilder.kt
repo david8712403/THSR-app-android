@@ -2,10 +2,9 @@ package com.davidchen.thsrapp.http_api.bluenet
 
 import android.util.Log
 import okhttp3.HttpUrl
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.json.JSONObject
 
 abstract class ApiBuilder {
 
@@ -15,7 +14,7 @@ abstract class ApiBuilder {
         .addPathSegment("v2_0")
         .addPathSegment("lineBot")
     lateinit var httpUrl: HttpUrl
-    private var body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), "{}")
+    private var body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), "{}")
 
     companion object {
         const val TAG = "bluenet"

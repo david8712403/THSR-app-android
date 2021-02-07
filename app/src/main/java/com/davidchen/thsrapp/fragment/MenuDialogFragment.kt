@@ -84,7 +84,7 @@ class MenuDialogFragment : BottomSheetDialogFragment() {
 
                             override fun onResponse(call: Call, response: Response) {
                                 ProgressDialogUtil.dismiss()
-                                val json = response.body()!!.string()
+                                val json = response.body!!.string()
                                 Log.d(ApiBuilder.TAG, json)
                                 val restaurants: Array<Restaurant> =
                                     Gson().fromJson(json, RawDataRestaurant::class.java).results.content
