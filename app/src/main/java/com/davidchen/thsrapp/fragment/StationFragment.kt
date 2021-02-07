@@ -1,5 +1,6 @@
 package com.davidchen.thsrapp.fragment
 
+import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.davidchen.thsrapp.R
 import com.davidchen.thsrapp.data.THSR.Station
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 private lateinit var stations: ArrayList<Station>
 
@@ -22,7 +26,7 @@ private lateinit var stations: ArrayList<Station>
  * Use the [StationFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StationFragment : Fragment() {
+class StationFragment : BottomSheetDialogFragment() {
 
     // ui
     private lateinit var v: View
@@ -48,6 +52,18 @@ class StationFragment : Fragment() {
             Log.e(this.javaClass.name, "stations empty")
         }
 
+        adapter = StationAdapter(stations)
+        adapter.callback = object : StationAdapter.Callback {
+            override fun onClick(station: Station) {
+                val b = Bundle()
+                b.putString("operation", "moveCamera")
+                b.putSerializable("station", station)
+                parentFragmentManager.setFragmentResult(REQUEST_KEY, b)
+                this@StationFragment.dismiss()
+            }
+        }
+        rvStation.adapter = adapter
+
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -59,19 +75,20 @@ class StationFragment : Fragment() {
 
         })
 
-        adapter = StationAdapter(stations)
-        adapter.callback = object : StationAdapter.Callback {
-            override fun onClick(station: Station) {
-                val b = Bundle()
-                b.putString("operation", "moveCamera")
-                b.putSerializable("station", station)
-                parentFragmentManager.setFragmentResult(REQUEST_KEY, b)
-                parentFragmentManager.popBackStack()
-            }
-        }
-        rvStation.adapter = adapter
-
         return v
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return if (context == null) {
+            super.onCreateDialog(savedInstanceState)
+        } else BottomSheetDialog(requireContext(), R.style.TransparentBottomSheetStyle)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        //this forces the sheet to appear at max height even on landscape
+        val behavior = BottomSheetBehavior.from(requireView().parent as View)
+        behavior.state = BottomSheetBehavior.STATE_DRAGGING
     }
 
     private fun initUi() {

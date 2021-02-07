@@ -117,12 +117,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         btSearchStation.setOnClickListener {
             val s = ArrayList<Station>()
             s.addAll(stations)
-            val f = StationFragment.newInstance(s)
-
-            supportFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom, R.anim.enter_from_bottom, R.anim.exit_to_bottom)
-                .add(R.id.root_constraint, f).addToBackStack(f.javaClass.name)
-                .commit()
+            StationFragment.newInstance(s).show(supportFragmentManager, "dialog")
         }
 
         // Click search button
